@@ -10755,6 +10755,7 @@ sdcc ${VERSION} is now configured for
     pdk13               ${enable_pdk13_port}
     pdk14               ${enable_pdk14_port}
     pdk15               ${enable_pdk15_port}
+    caltech10           ${enable_caltech10_port}
 
   Disable non-free lib: ${OPT_DISABLE_NON_FREE}
   Disable packihx:      ${OPT_DISABLE_PACKIHX}
