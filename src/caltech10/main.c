@@ -766,11 +766,11 @@ static const char * const _libs_hc08[] = { "hc08", NULL, };
 static const char * const _libs_s08[] = { "s08", NULL, };
 
 /* Globals */
-PORT hc08_port =
+PORT caltech10_port =
 {
-  TARGET_ID_HC08,
-  "hc08",
-  "HC08",                       /* Target name */
+  TARGET_ID_CALTECH10,
+  "caltech10",
+  "Caltech10",                  /* Target name */
   NULL,                         /* Processor name */
   {
     glue,
