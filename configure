@@ -774,6 +774,7 @@ enable_stm8_port
 enable_pdk13_port
 enable_pdk14_port
 enable_pdk15_port
+enable_caltech10_port
 enable_ucsim
 enable_device_lib
 enable_packihx
