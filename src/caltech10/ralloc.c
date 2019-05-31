@@ -41,9 +41,6 @@ extern void genhc08Code (iCode *);
 
 #define D(x)
 
-// Build the old allocator. It can be used by command-line options
-#define OLDRALLOC 1
-
 /* Global data */
 static struct
   {
@@ -1987,45 +1984,6 @@ packRegisters (eBBlock ** ebpp, int blockno)
 }
 
 static void
-RegFix (eBBlock ** ebbs, int count)
-{
-  int i;
-
-  /* Check for and fix any problems with uninitialized operands */
-  for (i = 0; i < count; i++)
-    {
-      iCode *ic;
-
-      if (ebbs[i]->noPath && (ebbs[i]->entryLabel != entryLabel && ebbs[i]->entryLabel != returnLabel))
-        continue;
-
-      for (ic = ebbs[i]->sch; ic; ic = ic->next)
-        {
-          deassignLRs (ic, ebbs[i]);
-
-          if (SKIP_IC2 (ic))
-            continue;
-
-          if (ic->op == IFX)
-            {
-              verifyRegsAssigned (IC_COND (ic), ic);
-              continue;
-            }
-
-          if (ic->op == JUMPTABLE)
-            {
-              verifyRegsAssigned (IC_JTCOND (ic), ic);
-              continue;
-            }
-
-          verifyRegsAssigned (IC_RESULT (ic), ic);
-          verifyRegsAssigned (IC_LEFT (ic), ic);
-          verifyRegsAssigned (IC_RIGHT (ic), ic);
-        }
-    }
-}
-
-static void
 replaceAccuseOperand (operand * op)
 {
   symbol * sym;
@@ -2096,7 +2054,6 @@ replaceAccuse (eBBlock ** ebbs, int count)
     }
 }
 
-#ifdef OLDRALLOC
 /*-----------------------------------------------------------------*/
 /* Old, obsolete register allocator                                */
 /*-----------------------------------------------------------------*/
@@ -2200,207 +2157,6 @@ hc08_oldralloc (ebbIndex * ebbi)
 
   return;
 }
-#endif
-
-/** Serially allocate registers to the variables.
-    This was the main register allocation function.  It is called after
-    packing.
-    In the new register allocator it only serves to mark variables for the new register allocator.
- */
-static void
-serialRegMark (eBBlock ** ebbs, int count)
-{
-  int i;
-  short int max_alloc_bytes = SHRT_MAX; // Byte limit. Set this to a low value to pass only few variables to the register allocator. This can be useful for debugging.
-
-  /* for all blocks */
-  for (i = 0; i < count; i++)
-    {
-      iCode *ic;
-
-      if (ebbs[i]->noPath &&
-          (ebbs[i]->entryLabel != entryLabel &&
-           ebbs[i]->entryLabel != returnLabel))
-        continue;
-
-      /* for all instructions do */
-      for (ic = ebbs[i]->sch; ic; ic = ic->next)
-        {
-          updateRegUsage(ic);
-
-          /* if this is an ipop that means some live
-             range will have to be assigned again */
-          if (ic->op == IPOP)
-              reassignLR (IC_LEFT (ic));
-
-          /* if result is present && is a true symbol */
-          if (IC_RESULT (ic) && ic->op != IFX &&
-              IS_TRUE_SYMOP (IC_RESULT (ic)))
-            {
-              OP_SYMBOL (IC_RESULT (ic))->allocreq++;
-            }
-
-          /* take away registers from live
-             ranges that end at this instruction */
-          deassignLRs (ic, ebbs[i]);
-
-          /* some don't need registers */
-          if (SKIP_IC2 (ic) ||
-              ic->op == JUMPTABLE ||
-              ic->op == IFX ||
-              ic->op == IPUSH ||
-              ic->op == IPOP ||
-              (IC_RESULT (ic) && POINTER_SET (ic)))
-            {
-              continue;
-            }
-
-          /* now we need to allocate registers only for the result */
-          if (IC_RESULT (ic))
-            {
-              symbol *sym = OP_SYMBOL (IC_RESULT (ic));
-
-              /* Make sure any spill location is definitely allocated */
-              if (sym->isspilt && !sym->remat && sym->usl.spillLoc &&
-                  !sym->usl.spillLoc->allocreq)
-                {
-                  sym->usl.spillLoc->allocreq++;
-                }
-
-              /* if it does not need or is spilt
-                 or is already assigned to registers
-                 or will not live beyond this instructions */
-              if (!sym->nRegs ||
-                  sym->isspilt ||
-                  bitVectBitValue (_G.regAssigned, sym->key) ||
-                  sym->liveTo <= ic->seq)
-                {
-                  continue;
-                }
-
-              /* if some liverange has been spilt at the block level
-                 and this one live beyond this block then spil this
-                 to be safe */
-              if (_G.blockSpil && sym->liveTo > ebbs[i]->lSeq)
-                {
-                  spillThis (sym);
-                  continue;
-                }
-
-              if (sym->remat)
-                {
-                  spillThis (sym);
-                  continue;
-                }
-
-              if (max_alloc_bytes >= sym->nRegs)
-                {
-                  sym->for_newralloc = 1;
-                  max_alloc_bytes -= sym->nRegs;
-                }
-              else if (!sym->for_newralloc)
-                {
-                  spillThis (sym);
-                  printf ("Spilt %s due to byte limit.\n", sym->name);
-                }
-            }
-        }
-    }
-}
-/*-----------------------------------------------------------------*/
-/* New register allocator                                          */
-/*-----------------------------------------------------------------*/
-void
-hc08_ralloc (ebbIndex * ebbi)
-{
-  eBBlock ** ebbs = ebbi->bbOrder;
-  int count = ebbi->count;
-  iCode *ic;
-  int i;
-
-  setToNull ((void *) &_G.funcrUsed);
-  setToNull ((void *) &_G.regAssigned);
-  setToNull ((void *) &_G.totRegAssigned);
-  hc08_ptrRegReq = _G.stackExtend = _G.dataExtend = 0;
-  hc08_nRegs = 7;
-  hc08_reg_a = hc08_regWithIdx(A_IDX);
-  hc08_reg_x = hc08_regWithIdx(X_IDX);
-  hc08_reg_h = hc08_regWithIdx(H_IDX);
-  hc08_reg_hx = hc08_regWithIdx(HX_IDX);
-  hc08_reg_xa = hc08_regWithIdx(XA_IDX);
-  hc08_reg_sp = hc08_regWithIdx(SP_IDX);
-  hc08_nRegs = 5;
-
-  /* change assignments this will remove some
-     live ranges reducing some register pressure */
-
-  for (i = 0; i < count; i++)
-    packRegisters (ebbs, i);
-
-  /* liveranges probably changed by register packing
-     so we compute them again */
-  recomputeLiveRanges (ebbs, count, FALSE);
-
-  if (options.dump_i_code)
-    dumpEbbsToFileExt (DUMP_PACK, ebbi);
-
-  /* first determine for each live range the number of
-     registers & the type of registers required for each */
-  regTypeNum (*ebbs);
-
-  /* and serially allocate registers */
-  serialRegMark (ebbs, count);
-
-  /* The new register allocator invokes its magic */
-  ic = hc08_ralloc2_cc (ebbi);
-
-  RegFix (ebbs, count);
-
-  /* if stack was extended then tell the user */
-  if (_G.stackExtend)
-    {
-/*      werror(W_TOOMANY_SPILS,"stack", */
-/*             _G.stackExtend,currFunc->name,""); */
-      _G.stackExtend = 0;
-    }
-
-  if (_G.dataExtend)
-    {
-/*      werror(W_TOOMANY_SPILS,"data space", */
-/*             _G.dataExtend,currFunc->name,""); */
-      _G.dataExtend = 0;
-    }
-
-  /* redo that offsets for stacked automatic variables */
-  if (currFunc)
-    {
-      redoStackOffsets ();
-    }
-
-  if (options.dump_i_code)
-    {
-      dumpEbbsToFileExt (DUMP_RASSGN, ebbi);
-      dumpLiveRanges (DUMP_LRANGE, liveRanges);
-    }
-
-  /* do the overlaysegment stuff SDCCmem.c */
-  doOverlays (ebbs, count);
-
-  /* now get back the chain */
-  ic = iCodeLabelOptimize (iCodeFromeBBlock (ebbs, count));
-
-  genhc08Code (ic);
-
-  /* free up any _G.stackSpil locations allocated */
-  applyToSet (_G.stackSpil, deallocStackSpil);
-  _G.slocNum = 0;
-  setToNull ((void *) &_G.stackSpil);
-  setToNull ((void *) &_G.spiltSet);
-  /* mark all registers as free */
-  freeAllRegs ();
-
-  return;
-}
 
 /*-----------------------------------------------------------------*/
 /* assignRegisters - assigns registers to each live range as need  */
@@ -2408,11 +2164,7 @@ hc08_ralloc (ebbIndex * ebbi)
 void
 hc08_assignRegisters (ebbIndex * ebbi)
 {
-#ifdef OLDRALLOC
-  if (options.oldralloc)
-    hc08_oldralloc (ebbi);
-  else
-#endif
-    hc08_ralloc (ebbi);
+  wassert(0);
+  hc08_oldralloc (ebbi);
 }
 
