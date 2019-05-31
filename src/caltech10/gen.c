@@ -34,7 +34,7 @@
 #include <ctype.h>
 
 #include "common.h"
-#include "hc08.h"
+#include "caltech10.h"
 #include "ralloc.h"
 #include "gen.h"
 #include "dbuf_string.h"
