@@ -37,11 +37,6 @@ static char _hc08_defaultRules[] =
 #include "peeph.rul"
 };
 
-static char _s08_defaultRules[] =
-{
-#include "peeph.rul"
-};
-
 HC08_OPTS hc08_opts;
 
 /* list of key words used by msc51 */
@@ -83,13 +78,6 @@ static void
 _hc08_init (void)
 {
   hc08_opts.sub = SUB_HC08;
-  asm_addTree (&asm_asxxxx_mapping);
-}
-
-static void
-_s08_init (void)
-{
-  hc08_opts.sub = SUB_S08;
   asm_addTree (&asm_asxxxx_mapping);
 }
 
@@ -763,7 +751,6 @@ static const char *_asmCmd[] =
 };
 
 static const char * const _libs_hc08[] = { "hc08", NULL, };
-static const char * const _libs_s08[] = { "s08", NULL, };
 
 /* Globals */
 PORT caltech10_port =
