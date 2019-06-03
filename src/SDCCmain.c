@@ -366,7 +366,7 @@ static PORT *_ports[] = {
 #if !OPT_DISABLE_PDK15
   &pdk15_port,
 #endif
-#if !OPT_DISABLE_PDK15
+#if !OPT_DISABLE_CALTECH10
   &caltech10_port,
 #endif
 };

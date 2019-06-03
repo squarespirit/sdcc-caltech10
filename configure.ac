@@ -782,6 +782,7 @@ AC_DO_PORT(stm8,     stm8,   STM8,     [Excludes the STM8 port])
 AC_DO_PORT(pdk13,    pdk,    PDK13,    [Excludes the PDK13 port])
 AC_DO_PORT(pdk14,    pdk,    PDK14,    [Excludes the PDK14 port])
 AC_DO_PORT(pdk15,    pdk,    PDK15,    [Excludes the PDK15 port])
+AC_DO_PORT(caltech10,caltech10,CALTECH10,[Excludes the Caltech10 port])
 
 # Unsupported targets
 ####AC_DO_PORT_ENABLER(avr,   avr,   AVR,   [Includes the AVR port (disabled by default)])
@@ -930,6 +931,10 @@ if test $OPT_DISABLE_PDK15 = 0; then
   test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_FILES([device/lib/pdk15/Makefile])
 fi
 
+if test $OPT_DISABLE_CALTECH10 = 0; then
+  AC_CONFIG_FILES([src/caltech10/Makefile])
+fi
+
 test $OPT_DISABLE_DEVICE_LIB = 0 && AC_CONFIG_FILES([device/lib/Makefile])
 test $OPT_DISABLE_DEVICE_LIB = 0 && test $OPT_DISABLE_NON_FREE = 0 && AC_CONFIG_FILES([device/non-free/lib/Makefile])
 
@@ -1010,6 +1015,7 @@ sdcc ${VERSION} is now configured for
     pdk13               ${enable_pdk13_port}
     pdk14               ${enable_pdk14_port}
     pdk15               ${enable_pdk15_port}
+    caltech10           ${enable_caltech10_port}
 
   Disable non-free lib: ${OPT_DISABLE_NON_FREE}
   Disable packihx:      ${OPT_DISABLE_PACKIHX}

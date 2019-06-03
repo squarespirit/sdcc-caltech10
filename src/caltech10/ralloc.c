@@ -2164,7 +2164,6 @@ hc08_oldralloc (ebbIndex * ebbi)
 void
 hc08_assignRegisters (ebbIndex * ebbi)
 {
-  wassert(0);
   hc08_oldralloc (ebbi);
 }
 
