@@ -1,5 +1,6 @@
 # Unused directories
-.vscode
+.vscode/*
+!.vscode/settings.json
 bin
 debugger
 device
