@@ -1,6 +1,8 @@
-# Unused directories
+# vscode
 .vscode/*
 !.vscode/settings.json
+
+# Unused directories
 bin
 debugger
 device
@@ -8,6 +10,9 @@ doc
 sdas
 sim
 support
+
+# Autoconf outputs
+autom4te.cache
 
 # configure outputs
 Makefile
