@@ -1,29 +1,9 @@
 /*-------------------------------------------------------------------------
-  gen.h - header file for code generation for hc(s)08
-
-             Written By -  Sandeep Dutta . sandeep.dutta@usa.net (1998)
-
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; either version 2, or (at your option) any
-   later version.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-   
-   In other words, you are welcome to use, share and improve this program.
-   You are forbidden to forbid anyone else to use, share and improve
-   what you give them.   Help stamp out software-hoarding!  
+  gen.h - header file for code generation for Caltech10 
 -------------------------------------------------------------------------*/
 
-#ifndef SDCCGENHC08_H
-#define SDCCGENHC08_H
+#ifndef SDCCGENCALTECH10_H
+#define SDCCGENCALTECH10_H
 
 enum
   {
@@ -71,7 +51,6 @@ typedef struct asmop
     union
       {
 	value *aop_lit;		/* if literal */
-	reg_info *aop_reg[4];	/* array of registers */
 	char *aop_dir;		/* if direct  */
 	struct {
 		char *aop_immd1;	/* if immediate others are implied */
@@ -83,13 +62,7 @@ typedef struct asmop
   }
 asmop;
 
-void genhc08Code (iCode *);
-void hc08_emitDebuggerSymbol (const char *);
-
-extern unsigned fReturnSizeHC08;
-
-iCode *hasInchc08 (operand *op, const iCode *ic, int osize);
-extern bool hc08_assignment_optimal;
+void genCaltech10Code (iCode *);
 
 #endif
 
