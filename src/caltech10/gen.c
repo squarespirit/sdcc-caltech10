@@ -399,6 +399,11 @@ void genCaltech10Code (iCode *lic)
       }
       cln = ic->lineno;
     }
+    if (options.iCodeInAsm) {
+      const char *iLine = printILine (ic);
+      emitcode("", "; ic:%d: %s", ic->seq, iLine);
+      dbuf_free (iLine);
+    }
     genCaltech10iCode(ic);
   }
   // Now do the actual printing
