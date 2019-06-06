@@ -287,7 +287,7 @@ static void loadFromAop(asmop *aop) {
 static void storeToAop(asmop *aop) {
   wassert(aop->size == 1);
   if (aop->type == AOP_DIR) {
-    emitcode("STD", "%s", aop->aopu.aop_dir);
+    emitcode("STD", "$%s", aop->aopu.aop_dir);
     return;
   }
   // Support storing to direct only
