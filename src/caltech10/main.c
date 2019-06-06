@@ -86,8 +86,8 @@ PORT caltech10_port =
     NULL,     // Bit space
     NULL,     // Registers
     "GSINIT  (CODE)", // Static
-    NULL,     // Overlay
-    NULL,     // Post-static
+    "OSEG    (PAG, OVR)", // Overlay
+    "GSFINAL (CODE)", // Post-static
     "HOME    (CODE)", // HOME
     NULL,     // initialized xdata
     NULL,     // a code copy of xiseg
