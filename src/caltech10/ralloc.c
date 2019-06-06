@@ -43,5 +43,12 @@ void caltech10_assignRegisters (ebbIndex * ebbi)
     dumpEbbsToFileExt (DUMP_RASSGN, ebbi);
     dumpLiveRanges (DUMP_LRANGE, liveRanges);
   }
+
+  // Convert basic blocks to icode list
+  eBBlock ** ebbs = ebbi->bbOrder;
+  int count = ebbi->count;
+  iCode *ic = iCodeLabelOptimize(iCodeFromeBBlock(ebbs, count));
+
+  genCaltech10Code(ic);
 }
 
