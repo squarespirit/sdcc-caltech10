@@ -11,7 +11,11 @@
 static bool caltech10_parseOptions(int *pargc, char **argv, int *i) {
   return FALSE;  /* No options to parse */
 }
-static void caltech10_finaliseOptions() {}
+static void caltech10_finaliseOptions() {
+  // Set local/global memmaps
+  port->mem.default_local_map = data;
+  port->mem.default_globl_map = data;
+}
 static void caltech10_setDefaultOptions() {}
 static void caltech10_reset_regparams(struct sym_link *s) {}
 // 1 if symbol can be passed in register
@@ -63,20 +67,20 @@ PORT caltech10_port =
   { // Tags for generic pointers
     0x00, 0x00, 0x00, 0x00    /* far, near, xstack, code */
   },
-  { // Memory regions
-    NULL,     /* External stack */
-    "STACK",  /* Internal stack */
-    "CODE",
-    "DATA",
-    NULL,     // ISEG
-    NULL,     // PSEG
-    "XDATA",  // external data
+  { // Memory regions. See comments in SDCCmem.h
+    NULL,     // External stack
+    "STACK",  // Internal stack
+    "CODE",   // Code
+    "DATA",   // Internal data
+    NULL,     // Initialized data
+    NULL,     // Paged data
+    NULL,     // external data
     NULL,     // BIT
     NULL,     // REG
     NULL,     // STATIC
     NULL,     // OVERLAY
     NULL,     // POST-STATIC
-    NULL,     // HOME
+    "HOME    (CODE)", // HOME
     NULL,     // initialized xdata
     NULL,     // a code copy of xiseg
     NULL,     // const_name - const data (code or not)
@@ -85,8 +89,8 @@ PORT caltech10_port =
     NULL,     // iabs_name - absolute data
     NULL,     // name of segment for initialized variables
     NULL,     // name of segment for copies of initialized variables in code space
-    NULL,
-    NULL,
+    NULL,     // default memmap for local vars (set when initializing port)
+    NULL,     // default memmap for global vars (set when initializing port)
     1,        // Code-space is read only
     1         // No extended alignments supported.
   },
