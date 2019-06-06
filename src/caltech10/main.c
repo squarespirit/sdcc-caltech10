@@ -8,6 +8,8 @@
 #include "gen.h"
 #include "dbuf_string.h"
 
+static const char *caltech10_asmCmd[] = {"caltech10as", "$1.asm", NULL};
+
 static bool caltech10_parseOptions(int *pargc, char **argv, int *i) {
   return FALSE;  /* No options to parse */
 }
@@ -52,7 +54,7 @@ PORT caltech10_port =
     NULL,                       /* model == target */
   },
   { // Assembler
-    NULL,     // Calling caltech10as from sdcc not supported yet
+    caltech10_asmCmd,
     NULL,
     NULL,
     NULL,
