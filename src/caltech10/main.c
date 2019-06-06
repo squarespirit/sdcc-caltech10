@@ -38,7 +38,6 @@ static bool hasNativeMulFor (iCode *ic, sym_link *left, sym_link *right) {
   return false;
 }
 
-/* Globals */
 PORT caltech10_port =
 {
   TARGET_ID_CALTECH10,          // Unique ID for target
@@ -82,16 +81,16 @@ PORT caltech10_port =
     NULL,     // Initialized data
     NULL,     // Paged data
     NULL,     // external data
-    NULL,     // BIT
-    NULL,     // REG
-    NULL,     // STATIC
-    NULL,     // OVERLAY
-    NULL,     // POST-STATIC
+    NULL,     // Bit space
+    NULL,     // Registers
+    "GSINIT  (CODE)", // Static
+    NULL,     // Overlay
+    NULL,     // Post-static
     "HOME    (CODE)", // HOME
     NULL,     // initialized xdata
     NULL,     // a code copy of xiseg
     NULL,     // const_name - const data (code or not)
-    NULL,     // cabs_name - const absolute data (code or not)
+    "CABS    (ABS,CODE)", // cabs_name - const absolute data (code or not)
     NULL,     // xabs_name - absolute xdata
     NULL,     // iabs_name - absolute data
     NULL,     // name of segment for initialized variables
