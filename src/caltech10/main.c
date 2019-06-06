@@ -52,7 +52,14 @@ PORT caltech10_port =
     MODEL_SMALL,                // Default model
     NULL,                       /* model == target */
   },
-  { // Assembler. Not supported yet
+  { // Assembler
+    NULL,     // Calling caltech10as from sdcc not supported yet
+    NULL,
+    NULL,
+    NULL,
+    0,        // Print externs as global
+    ".asm",   // Asm file extension
+    NULL,     // Assembler executing fn
   },
   { // Linker, not supported
   },
