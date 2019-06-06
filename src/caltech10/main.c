@@ -8,7 +8,31 @@
 #include "gen.h"
 #include "dbuf_string.h"
 
+static const ASM_MAPPING caltech10_asm_mapping_arr[] = {
+  {"labeldef", "%s:"},
+  {"slabeldef", "%s:"},
+  {"area", "; .area %s"},
+  {"areacode", "; .areacode"},
+  {"areadata", "; .areadata"},
+  {"areahome", "; .areahome"},
+  {"ds", "; .ds %d"},
+  {"module", "; .file \"%s.c\""},
+  {"fileprelude", ""},
+  {"global", "; .globl %s"},
+  {NULL, NULL}
+};
+
+static const ASM_MAPPINGS caltech10_asm_mappings = {
+  NULL,
+  caltech10_asm_mapping_arr
+};
+
 static const char *caltech10_asmCmd[] = {"caltech10as", "$1.asm", NULL};
+
+static void caltech10_init() {
+  // Initialize assembler tree
+  asm_addTree(&caltech10_asm_mappings);
+}
 
 static bool caltech10_parseOptions(int *pargc, char **argv, int *i) {
   return FALSE;  /* No options to parse */
@@ -128,7 +152,7 @@ PORT caltech10_port =
     10,         /* sizeofDispatch */
   },
   "_",
-  NULL,     // init fn
+  caltech10_init,
   caltech10_parseOptions,
   NULL,     // list of automatically parsed options
   NULL,     // port-specific paths
