@@ -14,15 +14,9 @@ enum
     AOP_EXT, AOP_SOF, AOP_DUMMY, AOP_IDX
   };
 
-enum
-  {
-    ACCUSE_XA = 1,
-    ACCUSE_HX
-  };
-
-/* type asmop : a homogenised type for 
-   all the different spaces an operand can be
-   in */
+/* asmop: a homogenised type for all the different spaces an operand can be in
+ * It was defined in hc08 but is handy to use, so was kept for the caltech10
+ * port */
 typedef struct asmop
   {
 
