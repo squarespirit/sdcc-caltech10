@@ -1,0 +1,1 @@
+This is a version of sdcc with an additional backend to the Caltech10 CPU. However, it can only compile the simplest C programs.
